@@ -3,6 +3,13 @@ import Dashboard from "./Dashboard";
 import { fetchChallengesByStatusService } from "../../services/globalChallengeService";
 import { fetchUserByIdService } from "../../services/userService";
 
+jest.mock("../../firebase/firebase", () => ({
+  auth: { currentUser: { uid: "test-user-id" } },
+  db: jest.fn(),
+  storage: jest.fn(),
+  functions: jest.fn(),
+}));
+
 jest.mock(
   "./StreakTracker",
   () =>

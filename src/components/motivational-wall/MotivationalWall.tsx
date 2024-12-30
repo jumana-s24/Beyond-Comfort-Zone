@@ -63,10 +63,20 @@ const MotivationalWall: React.FC = () => {
     if (editingQuote) {
       if (editingQuote.isGlobal) {
         // If editing a global quote, save a personalized version and hide the original
-        const newQuote = { text, bgColor, fontColor, isGlobal: false };
-        await addQuoteService(text, bgColor, fontColor, userId);
+        const newQuoteId = await addQuoteService(
+          text,
+          bgColor,
+          fontColor,
+          userId
+        );
+        const newQuote = {
+          id: newQuoteId,
+          text,
+          bgColor,
+          fontColor,
+          isGlobal: false,
+        };
         setUserQuotes([...userQuotes, newQuote]);
-
         // Hide the original global quote
         const updatedHiddenQuotes = [...hiddenGlobalQuotes, editingQuote.id];
         setHiddenGlobalQuotes(updatedHiddenQuotes);
@@ -76,6 +86,7 @@ const MotivationalWall: React.FC = () => {
         );
       } else {
         // Edit user-created quote
+        console.log("editingQuote: ", editingQuote);
         await updateQuoteService(userId, editingQuote.id, {
           text,
           bgColor,
@@ -91,8 +102,12 @@ const MotivationalWall: React.FC = () => {
       }
     } else {
       // Adding a new quote
-      await addQuoteService(text, bgColor, fontColor, userId);
-      const newQuoteId = Date.now().toString();
+      const newQuoteId = await addQuoteService(
+        text,
+        bgColor,
+        fontColor,
+        userId
+      );
       setUserQuotes([
         ...userQuotes,
         { id: newQuoteId, text, bgColor, fontColor, isGlobal: false },

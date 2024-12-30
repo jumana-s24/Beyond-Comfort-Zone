@@ -27,13 +27,18 @@ export const addQuoteService = async (
   fontColor: string,
   userId: string
 ) => {
-  const quotesRef = collection(db, `users/${userId}/quotes`);
-  await addDoc(quotesRef, {
-    text,
-    bgColor,
-    fontColor,
-    createdAt: Timestamp.now(),
-  });
+  try {
+    const quotesRef = collection(db, `users/${userId}/quotes`);
+    const docRef = await addDoc(quotesRef, {
+      text,
+      bgColor,
+      fontColor,
+      createdAt: Timestamp.now(),
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error("Error adding document: ", error);
+  }
 };
 
 export const updateQuoteService = async (
@@ -41,11 +46,19 @@ export const updateQuoteService = async (
   quoteId: string,
   data: { text: string; bgColor: string; fontColor: string }
 ) => {
-  const quoteRef = doc(db, `users/${userId}/quotes/${quoteId}`);
-  await updateDoc(quoteRef, data);
+  try {
+    const quoteRef = doc(db, `users/${userId}/quotes/${quoteId}`);
+    await updateDoc(quoteRef, data);
+  } catch (error) {
+    console.log("Error updating document: ", error);
+  }
 };
 
 export const deleteQuoteService = async (userId: string, quoteId: string) => {
-  const quoteRef = doc(db, `users/${userId}/quotes/${quoteId}`);
-  await deleteDoc(quoteRef);
+  try {
+    const quoteRef = doc(db, `users/${userId}/quotes/${quoteId}`);
+    await deleteDoc(quoteRef);
+  } catch (error) {
+    console.error("Error removing document: ", error);
+  }
 };
