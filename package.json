@@ -53,7 +53,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^14.3.1",
+    "@testing-library/react": "^16.1.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.3.18",
@@ -68,5 +68,9 @@
   },
   "moduleNameMapper": {
     "^react-router-dom$": "<rootDir>/node_modules/react-router-dom"
+  },
+  "overrides": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5"
   }
 }
