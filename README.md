@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Beyond-Comfort-Zone
 =======
 # Getting Started with Create React App
