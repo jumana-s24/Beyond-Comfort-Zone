@@ -161,11 +161,11 @@ const CustomChallengeList = () => {
           become the author of your personal breakthrough journey.
         </p>
 
-        <div className="flex justify-between mb-10">
+        <div className="flex flex-col sm:flex-row justify-between mb-10">
           <input
             type="text"
             placeholder="Search challenges..."
-            className="w-[50%] p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="sm:w-[50%] mb-8 sm:mb-0 p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
