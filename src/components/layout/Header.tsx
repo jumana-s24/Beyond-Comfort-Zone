@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { IoIosMenu } from "react-icons/io";
 import { useAuth } from "../../contexts/AuthContext";
@@ -16,11 +16,11 @@ const Header: React.FC = () => {
     }
   }, [user]);
 
-  const handleOptionClick = (e: React.MouseEvent) => {
+  const handleOptionClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDropdownOpen(false);
     setIsUserDropdownOpen(false);
-  };
+  }, []);
 
   const handleSignOut = () => {
     auth
@@ -33,11 +33,13 @@ const Header: React.FC = () => {
       });
   };
 
-  const getLinkClassName = ({ isActive }: { isActive: boolean }) => {
-    return `tracking-wider text-lg text-primary ${
-      isActive ? "underline" : "hover:text-secondary"
-    }`;
-  };
+  const getLinkClassName = useCallback(
+    ({ isActive }: { isActive: boolean }) =>
+      `tracking-wider text-lg text-primary ${
+        isActive ? "underline" : "hover:text-secondary"
+      }`,
+    []
+  );
 
   return (
     <nav className="w-full py-4 px-2 border-b border-gray-200 shadow-sm">

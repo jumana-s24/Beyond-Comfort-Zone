@@ -14,6 +14,7 @@ import {
 import { updateUserStatsService } from "../../../services/statsService";
 import CustomChallengeModal from "./CustomChallengeModal";
 import { CustomChallenge } from "../../../types";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 const CustomChallengeList = () => {
   const [challenges, setChallenges] = useState<CustomChallenge[]>([]);
@@ -21,8 +22,13 @@ const CustomChallengeList = () => {
     useState<CustomChallenge | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredChallenges, setFilteredChallenges] = useState<
+    CustomChallenge[]
+  >([]);
 
   const userId = auth.currentUser?.uid as string;
+  const debouncedSearchQuery = useDebounce(searchQuery, 1000);
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -37,7 +43,23 @@ const CustomChallengeList = () => {
     };
 
     fetchChallenges();
-  }, []);
+  }, [userId]);
+
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      const filtered = challenges.filter((challenge) => {
+        return (
+          challenge.title.toLocaleLowerCase().includes(debouncedSearchQuery) ||
+          challenge.description
+            .toLocaleLowerCase()
+            .includes(debouncedSearchQuery)
+        );
+      });
+      setFilteredChallenges(filtered);
+    } else {
+      setFilteredChallenges(challenges);
+    }
+  }, [challenges, debouncedSearchQuery]);
 
   const handleAddChallenge = (newChallenge: CustomChallenge) => {
     setChallenges((prevChallenges) => [...prevChallenges, newChallenge]);
@@ -139,21 +161,28 @@ const CustomChallengeList = () => {
           become the author of your personal breakthrough journey.
         </p>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between mb-10">
+          <input
+            type="text"
+            placeholder="Search challenges..."
+            className="w-[50%] p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-primary hover:bg-secondary text-white py-2 px-4 rounded-md shadow-lg transition-all border border-transparent mb-6 animate-fadeIn"
+            className="bg-primary hover:bg-secondary text-white py-2 px-4 rounded-md shadow-lg transition-all border border-transparent animate-fadeIn"
           >
             + Add Custom Challenge
           </button>
         </div>
-        {challenges.length === 0 ? (
+        {filteredChallenges.length === 0 ? (
           <p className="text-center text-xl animate-fadeIn">
             No custom challenges found.
           </p>
         ) : (
           <>
-            {challenges.map((challenge, index: number) => (
+            {filteredChallenges.map((challenge, index: number) => (
               <ChallengeCard
                 key={index}
                 challengeId={challenge.id}

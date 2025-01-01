@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import CustomChallengeList from "./CustomChallengeList";
 import {
   getCustomChallengesService,
@@ -73,6 +79,8 @@ jest.mock("../global/ChallengeCard", () => ({
   ),
 }));
 
+jest.useFakeTimers();
+
 describe("CustomChallengeList Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -93,6 +101,47 @@ describe("CustomChallengeList Component", () => {
       expect(
         screen.getByText("No custom challenges found.")
       ).toBeInTheDocument();
+    });
+  });
+
+  it("filters challenges based on the search query with debounce", async () => {
+    const mockChallenges = [
+      { id: "1", title: "First Challenge", description: "Test description 1" },
+      { id: "2", title: "Second Challenge", description: "Test description 2" },
+    ];
+    (getCustomChallengesService as jest.Mock).mockResolvedValue(mockChallenges);
+
+    render(<CustomChallengeList />);
+
+    await waitFor(() => {
+      expect(screen.getByText("First Challenge")).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByText("Second Challenge")).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText("Search challenges...");
+    fireEvent.change(searchInput, { target: { value: "second" } });
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Second Challenge")).toBeInTheDocument();
+    });
+
+    fireEvent.change(searchInput, { target: { value: "" } });
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("First Challenge")).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByText("Second Challenge")).toBeInTheDocument();
     });
   });
 
