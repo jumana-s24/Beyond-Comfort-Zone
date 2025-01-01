@@ -1,19 +1,27 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./components/home-page/Home";
 import { AuthProvider } from "./contexts/AuthProvider";
-import AuthForm from "./components/auth/AuthForm";
 import Header from "./components/layout/Header";
-import VerifyEmailPage from "./components/auth/VerifyEmailPage";
-import Settings from "./components/settings/Settings";
-import Challenges from "./components/challenges/Challenges";
 import Footer from "./components/layout/Footer";
-import Dashboard from "./components/dashboard/Dashboard";
-import MotivationalWall from "./components/motivational-wall/MotivationalWall";
-import "./App.css";
 import { PrivateRoute } from "./components/routing/PrivateRoute";
-import NotFound from "./components/not-found/NotFound";
 import { QueryClient, QueryClientProvider } from "react-query";
+import "./App.css";
+
+// Lazy-loaded components
+const Home = React.lazy(() => import("./components/home-page/Home"));
+const AuthForm = React.lazy(() => import("./components/auth/AuthForm"));
+const VerifyEmailPage = React.lazy(
+  () => import("./components/auth/VerifyEmailPage")
+);
+const Settings = React.lazy(() => import("./components/settings/Settings"));
+const Challenges = React.lazy(
+  () => import("./components/challenges/Challenges")
+);
+const Dashboard = React.lazy(() => import("./components/dashboard/Dashboard"));
+const MotivationalWall = React.lazy(
+  () => import("./components/motivational-wall/MotivationalWall")
+);
+const NotFound = React.lazy(() => import("./components/not-found/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -24,23 +32,28 @@ const App: React.FC = () => {
         <Router>
           <AuthProvider>
             <Header />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<AuthForm />} />
-              <Route path="/register" element={<AuthForm />} />
-              <Route path="/verify-email" element={<VerifyEmailPage />} />
-              <Route
-                path="/settings/*"
-                element={<PrivateRoute component={Settings} />}
-              />
-              <Route
-                path="/dashboard"
-                element={<PrivateRoute component={Dashboard} />}
-              />
-              <Route path="/challenges/*" element={<Challenges />} />
-              <Route path="/motivational-wall" element={<MotivationalWall />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<div>Loading...</div>}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/auth" element={<AuthForm />} />
+                <Route path="/register" element={<AuthForm />} />
+                <Route path="/verify-email" element={<VerifyEmailPage />} />
+                <Route
+                  path="/settings/*"
+                  element={<PrivateRoute component={Settings} />}
+                />
+                <Route
+                  path="/dashboard"
+                  element={<PrivateRoute component={Dashboard} />}
+                />
+                <Route path="/challenges/*" element={<Challenges />} />
+                <Route
+                  path="/motivational-wall"
+                  element={<MotivationalWall />}
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
             <Footer />
           </AuthProvider>
         </Router>
