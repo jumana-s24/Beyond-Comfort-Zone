@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { auth } from "../../../firebase/firebase";
 import {
   deleteCustomChallengeService,
@@ -23,12 +23,9 @@ const CustomChallengeList = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [filteredChallenges, setFilteredChallenges] = useState<
-    CustomChallenge[]
-  >([]);
 
   const userId = auth.currentUser?.uid as string;
-  const debouncedSearchQuery = useDebounce(searchQuery, 1000);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -45,20 +42,15 @@ const CustomChallengeList = () => {
     fetchChallenges();
   }, [userId]);
 
-  useEffect(() => {
+  const filteredChallenges = useMemo(() => {
     if (debouncedSearchQuery) {
-      const filtered = challenges.filter((challenge) => {
-        return (
-          challenge.title.toLocaleLowerCase().includes(debouncedSearchQuery) ||
-          challenge.description
-            .toLocaleLowerCase()
-            .includes(debouncedSearchQuery)
-        );
-      });
-      setFilteredChallenges(filtered);
-    } else {
-      setFilteredChallenges(challenges);
+      return challenges.filter(
+        (challenge) =>
+          challenge.title.toLowerCase().includes(debouncedSearchQuery) ||
+          challenge.description.toLowerCase().includes(debouncedSearchQuery)
+      );
     }
+    return challenges;
   }, [challenges, debouncedSearchQuery]);
 
   const handleAddChallenge = (newChallenge: CustomChallenge) => {
