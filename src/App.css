@@ -1,0 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Mansalva&display=swap");
+
+body {
+  font-family: "Patrick Hand", cursive;
+  color: #4b5563;
+  /* Set textSecondary color */
+}
+
+/* Apply Mansalva font for all headers */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Mansalva", cursive;
+  color: #1f2937;
+  /* Set primary text color for headers */
+}
+
